@@ -101,7 +101,7 @@ int utf8_check_full(const char *buffer, int size, int32_t *codepoint)
     else
         return 0;
 
-    for(i = 1; i < size; i++)
+    for(i = 1; i < size; ++i)
     {
         u = (unsigned char)buffer[i];
 
@@ -169,7 +169,7 @@ int utf8_check_string(const char *string, int length)
     if(length == -1)
         length = strlen(string);
 
-    for(i = 0; i < length; i++)
+    for(i = 0; i < length; ++i)
     {
         int count = utf8_check_first(string[i]);
         if(count == 0)

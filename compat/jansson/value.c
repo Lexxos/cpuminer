@@ -373,7 +373,7 @@ static void json_delete_array(json_array_t *array)
 {
     unsigned int i;
 
-    for(i = 0; i < array->entries; i++)
+    for(i = 0; i < array->entries; ++i)
         json_decref(array->table[i]);
 
     free(array->table);
@@ -562,7 +562,7 @@ int json_array_clear(json_t *json)
         return -1;
     array = json_to_array(json);
 
-    for(i = 0; i < array->entries; i++)
+    for(i = 0; i < array->entries; ++i)
         json_decref(array->table[i]);
 
     array->entries = 0;
@@ -582,7 +582,7 @@ int json_array_extend(json_t *json, json_t *other_json)
     if(!json_array_grow(array, other->entries, 1))
         return -1;
 
-    for(i = 0; i < other->entries; i++)
+    for(i = 0; i < other->entries; ++i)
         json_incref(other->table[i]);
 
     array_copy(array->table, array->entries, other->table, 0, other->entries);
@@ -599,7 +599,7 @@ static int json_array_equal(json_t *array1, json_t *array2)
     if(size != json_array_size(array2))
         return 0;
 
-    for(i = 0; i < size; i++)
+    for(i = 0; i < size; ++i)
     {
         json_t *value1, *value2;
 
@@ -622,7 +622,7 @@ static json_t *json_array_copy(json_t *array)
     if(!result)
         return NULL;
 
-    for(i = 0; i < json_array_size(array); i++)
+    for(i = 0; i < json_array_size(array); ++i)
         json_array_append(result, json_array_get(array, i));
 
     return result;
@@ -637,7 +637,7 @@ static json_t *json_array_deep_copy(json_t *array)
     if(!result)
         return NULL;
 
-    for(i = 0; i < json_array_size(array); i++)
+    for(i = 0; i < json_array_size(array); ++i)
         json_array_append_new(result, json_deep_copy(json_array_get(array, i)));
 
     return result;

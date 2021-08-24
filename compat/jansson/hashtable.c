@@ -167,7 +167,7 @@ static int hashtable_do_rehash(hashtable_t *hashtable)
     if(!hashtable->buckets)
         return -1;
 
-    for(i = 0; i < num_buckets(hashtable); i++)
+    for(i = 0; i < num_buckets(hashtable); ++i)
     {
         hashtable->buckets[i].first = hashtable->buckets[i].last =
             &hashtable->list;
@@ -228,7 +228,7 @@ int hashtable_init(hashtable_t *hashtable,
     hashtable->free_key = free_key;
     hashtable->free_value = free_value;
 
-    for(i = 0; i < num_buckets(hashtable); i++)
+    for(i = 0; i < num_buckets(hashtable); ++i)
     {
         hashtable->buckets[i].first = hashtable->buckets[i].last =
             &hashtable->list;
@@ -313,7 +313,7 @@ void hashtable_clear(hashtable_t *hashtable)
 
     hashtable_do_clear(hashtable);
 
-    for(i = 0; i < num_buckets(hashtable); i++)
+    for(i = 0; i < num_buckets(hashtable); ++i)
     {
         hashtable->buckets[i].first = hashtable->buckets[i].last =
             &hashtable->list;

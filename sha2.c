@@ -91,7 +91,7 @@ void sha256_transform(uint32_t *state, const uint32_t *block, int swap)
 
 	/* 1. Prepare message schedule W. */
 	if (swap) {
-		for (i = 0; i < 16; i++)
+		for (i = 0; i < 16; ++i)
 			W[i] = swab32(block[i]);
 	} else
 		memcpy(W, block, 64);
@@ -170,7 +170,7 @@ void sha256_transform(uint32_t *state, const uint32_t *block, int swap)
 	RNDr(S, W, 63);
 
 	/* 4. Mix local working variables into global state */
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 8; ++i)
 		state[i] += S[i];
 }
 
@@ -195,7 +195,7 @@ static void sha256d_80_swap(uint32_t *hash, const uint32_t *data)
 	memcpy(S + 8, sha256d_hash1 + 8, 32);
 	sha256_init(hash);
 	sha256_transform(hash, S, 0);
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 8; ++i)
 		hash[i] = swab32(hash[i]);
 }
 
@@ -211,7 +211,7 @@ void sha256d(unsigned char *hash, const unsigned char *data, int len)
 		memcpy(T, data + len - r, r > 64 ? 64 : (r < 0 ? 0 : r));
 		if (r >= 0 && r < 64)
 			((unsigned char *)T)[r] = 0x80;
-		for (i = 0; i < 16; i++)
+		for (i = 0; i < 16; ++i)
 			T[i] = be32dec(T + i);
 		if (r < 56)
 			T[15] = 8 * len;
@@ -220,7 +220,7 @@ void sha256d(unsigned char *hash, const unsigned char *data, int len)
 	memcpy(S + 8, sha256d_hash1 + 8, 32);
 	sha256_init(T);
 	sha256_transform(T, S, 0);
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 8; ++i)
 		be32enc((uint32_t *)hash + i, T[i]);
 }
 
@@ -358,7 +358,7 @@ static inline void sha256d_ms(uint32_t *hash, uint32_t *W,
 	RNDr(S, W, 62);
 	RNDr(S, W, 63);
 
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 8; ++i)
 		S[i] += midstate[i];
 	
 	W[18] = S[18];
@@ -501,12 +501,12 @@ static inline int scanhash_sha256d_4way(int thr_id, uint32_t *pdata,
 	}
 	
 	do {
-		for (i = 0; i < 4; i++)
+		for (i = 0; i < 4; ++i)
 			data[4 * 3 + i] = ++n;
 		
 		sha256d_ms_4way(hash, data, midstate, prehash);
 		
-		for (i = 0; i < 4; i++) {
+		for (i = 0; i < 4; ++i) {
 			if (swab32(hash[4 * 7 + i]) <= Htarg) {
 				pdata[19] = data[4 * 3 + i];
 				sha256d_80_swap(hash, pdata);
@@ -560,12 +560,12 @@ static inline int scanhash_sha256d_8way(int thr_id, uint32_t *pdata,
 	}
 	
 	do {
-		for (i = 0; i < 8; i++)
+		for (i = 0; i < 8; ++i)
 			data[8 * 3 + i] = ++n;
 		
 		sha256d_ms_8way(hash, data, midstate, prehash);
 		
-		for (i = 0; i < 8; i++) {
+		for (i = 0; i < 8; ++i) {
 			if (swab32(hash[8 * 7 + i]) <= Htarg) {
 				pdata[19] = data[8 * 3 + i];
 				sha256d_80_swap(hash, pdata);

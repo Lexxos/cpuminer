@@ -53,7 +53,7 @@ static int dump_indent(unsigned long flags, int depth, int space, dump_func dump
         if(dump("\n", 1, data))
             return -1;
 
-        for(i = 0; i < depth; i++)
+        for(i = 0; i < depth; ++i)
         {
             if(dump(whitespace, ws_count, data))
                 return -1;
@@ -321,7 +321,7 @@ static int do_dump(const json_t *json, unsigned long flags, int depth,
                 {
                     keys[i] = jsonp_object_iter_fullkey(iter);
                     iter = json_object_iter_next((json_t *)json, iter);
-                    i++;
+                    ++i;
                 }
                 assert(i == size);
 
@@ -332,7 +332,7 @@ static int do_dump(const json_t *json, unsigned long flags, int depth,
 
                 qsort(keys, size, sizeof(object_key_t *), cmp_func);
 
-                for(i = 0; i < size; i++)
+                for(i = 0; i < size; ++i)
                 {
                     const char *key;
                     json_t *value;

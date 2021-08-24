@@ -332,9 +332,9 @@ static bool work_decode(const json_t *val, struct work *work)
 		goto err_out;
 	}
 
-	for (i = 0; i < ARRAY_SIZE(work->data); i++)
+	for (i = 0; i < ARRAY_SIZE(work->data); ++i)
 		work->data[i] = le32dec(work->data + i);
-	for (i = 0; i < ARRAY_SIZE(work->target); i++)
+	for (i = 0; i < ARRAY_SIZE(work->target); ++i)
 		work->target[i] = le32dec(work->target + i);
 
 	return true;
@@ -364,7 +364,7 @@ static bool gbt_work_decode(const json_t *val, struct work *work)
 	tmp = json_object_get(val, "rules");
 	if (tmp && json_is_array(tmp)) {
 		n = json_array_size(tmp);
-		for (i = 0; i < n; i++) {
+		for (i = 0; i < n; ++i) {
 			const char *s = json_string_value(json_array_get(tmp, i));
 			if (!s)
 				continue;
@@ -376,7 +376,7 @@ static bool gbt_work_decode(const json_t *val, struct work *work)
 	tmp = json_object_get(val, "mutable");
 	if (tmp && json_is_array(tmp)) {
 		n = json_array_size(tmp);
-		for (i = 0; i < n; i++) {
+		for (i = 0; i < n; ++i) {
 			const char *s = json_string_value(json_array_get(tmp, i));
 			if (!s)
 				continue;
@@ -426,7 +426,7 @@ static bool gbt_work_decode(const json_t *val, struct work *work)
 	}
 	tx_count = json_array_size(txa);
 	tx_size = 0;
-	for (i = 0; i < tx_count; i++) {
+	for (i = 0; i < tx_count; ++i) {
 		const json_t *tx = json_array_get(txa, i);
 		const char *tx_hex = json_string_value(json_object_get(tx, "data"));
 		if (!tx_hex) {
@@ -502,7 +502,7 @@ static bool gbt_work_decode(const json_t *val, struct work *work)
 			cbtx[cbtx_size++] = 0x21;
 			cbtx[cbtx_size++] = 0xa9;
 			cbtx[cbtx_size++] = 0xed;
-			for (i = 0; i < tx_count; i++) {
+			for (i = 0; i < tx_count; ++i) {
 				const json_t *tx = json_array_get(txa, i);
 				const json_t *hash = json_object_get(tx, "hash");
 				if (!hash || !hex2bin(wtree[1+i], json_string_value(hash), 32)) {
@@ -517,7 +517,7 @@ static bool gbt_work_decode(const json_t *val, struct work *work)
 				if (n % 2)
 					memcpy(wtree[n], wtree[n-1], 32);
 				n = (n + 1) / 2;
-				for (i = 0; i < n; i++)
+				for (i = 0; i < n; ++i)
 					sha256d(wtree[i], wtree[2*i], 64);
 			}
 			memset(wtree[1], 0, 32);  /* witness reserved value = 0 */
@@ -586,7 +586,7 @@ static bool gbt_work_decode(const json_t *val, struct work *work)
 	size_t tx_buf_size = 32 * 1024;
 	tx = malloc(tx_buf_size);
 	sha256d(merkle_tree[0], cbtx, cbtx_size);
-	for (i = 0; i < tx_count; i++) {
+	for (i = 0; i < tx_count; ++i) {
 		tmp = json_array_get(txa, i);
 		const char *tx_hex = json_string_value(json_object_get(tmp, "data"));
 		const size_t tx_hex_len = tx_hex ? strlen(tx_hex) : 0;
@@ -623,15 +623,15 @@ static bool gbt_work_decode(const json_t *val, struct work *work)
 			++n;
 		}
 		n /= 2;
-		for (i = 0; i < n; i++)
+		for (i = 0; i < n; ++i)
 			sha256d(merkle_tree[i], merkle_tree[2*i], 64);
 	}
 
 	/* assemble block header */
 	work->data[0] = swab32(version);
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 8; ++i)
 		work->data[8 - i] = le32dec(prevhash + i);
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 8; ++i)
 		work->data[9 + i] = be32dec((uint32_t *)merkle_tree[0] + i);
 	work->data[17] = swab32(curtime);
 	work->data[18] = le32dec(&bits);
@@ -643,7 +643,7 @@ static bool gbt_work_decode(const json_t *val, struct work *work)
 		applog(LOG_ERR, "JSON invalid target");
 		goto out;
 	}
-	for (i = 0; i < ARRAY_SIZE(work->target); i++)
+	for (i = 0; i < ARRAY_SIZE(work->target); ++i)
 		work->target[7 - i] = be32dec(target + i);
 
 	tmp = json_object_get(val, "workid");
@@ -686,7 +686,7 @@ static void share_result(int result, const char *reason)
 
 	hashrate = 0.;
 	pthread_mutex_lock(&stats_lock);
-	for (i = 0; i < opt_n_threads; i++)
+	for (i = 0; i < opt_n_threads; ++i)
 		hashrate += thr_hashrates[i];
 	result ? accepted_count++ : rejected_count++;
 	pthread_mutex_unlock(&stats_lock);
@@ -742,7 +742,7 @@ static bool submit_upstream_work(CURL *curl, struct work *work)
 	} else if (work->txs) {
 		char *req;
 
-		for (i = 0; i < ARRAY_SIZE(work->data); i++)
+		for (i = 0; i < ARRAY_SIZE(work->data); ++i)
 			be32enc(work->data + i, work->data[i]);
 		bin2hex(data_str, (unsigned char *)work->data, 80);
 		if (work->workid) {
@@ -790,7 +790,7 @@ static bool submit_upstream_work(CURL *curl, struct work *work)
 		json_decref(val);
 	} else {
 		/* build hex string */
-		for (i = 0; i < ARRAY_SIZE(work->data); i++)
+		for (i = 0; i < ARRAY_SIZE(work->data); ++i)
 			le32enc(work->data + i, work->data[i]);
 		bin2hex(data_str, (unsigned char *)work->data, sizeof(work->data));
 
@@ -1085,20 +1085,20 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 
 	/* Generate merkle root */
 	sha256d(merkle_root, sctx->job.coinbase, sctx->job.coinbase_size);
-	for (i = 0; i < sctx->job.merkle_count; i++) {
+	for (i = 0; i < sctx->job.merkle_count; ++i) {
 		memcpy(merkle_root + 32, sctx->job.merkle[i], 32);
 		sha256d(merkle_root, merkle_root, 64);
 	}
 	
 	/* Increment extranonce2 */
-	for (i = 0; i < sctx->xnonce2_size && !++sctx->job.xnonce2[i]; i++);
+	for (i = 0; i < sctx->xnonce2_size && !++sctx->job.xnonce2[i]; ++i);
 
 	/* Assemble block header */
 	memset(work->data, 0, 128);
 	work->data[0] = le32dec(sctx->job.version);
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 8; ++i)
 		work->data[1 + i] = le32dec((uint32_t *)sctx->job.prevhash + i);
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 8; ++i)
 		work->data[9 + i] = be32dec((uint32_t *)merkle_root + i);
 	work->data[17] = le32dec(sctx->job.ntime);
 	work->data[18] = le32dec(sctx->job.nbits);
@@ -1258,7 +1258,7 @@ static void *miner_thread(void *userdata)
 		}
 		if (opt_benchmark && thr_id == opt_n_threads - 1) {
 			double hashrate = 0.;
-			for (i = 0; i < opt_n_threads && thr_hashrates[i]; i++)
+			for (i = 0; i < opt_n_threads && thr_hashrates[i]; ++i)
 				hashrate += thr_hashrates[i];
 			if (i == opt_n_threads) {
 				sprintf(s, hashrate >= 1e6 ? "%.0f" : "%.2f", 1e-3 * hashrate);
@@ -1281,7 +1281,7 @@ static void restart_threads(void)
 {
 	int i;
 
-	for (i = 0; i < opt_n_threads; i++)
+	for (i = 0; i < opt_n_threads; ++i)
 		work_restart[i].restart = 1;
 }
 
@@ -1559,7 +1559,7 @@ static void parse_arg(int key, char *arg, char *pname)
 
 	switch(key) {
 	case 'a':
-		for (i = 0; i < ARRAY_SIZE(algo_names); i++) {
+		for (i = 0; i < ARRAY_SIZE(algo_names); ++i) {
 			v = strlen(algo_names[i]);
 			if (!strncmp(arg, algo_names[i], v)) {
 				if (arg[v] == '\0') {
@@ -1665,7 +1665,7 @@ static void parse_arg(int key, char *arg, char *pname)
 				strncpy(rpc_user, ap, p - ap);
 				free(rpc_pass);
 				rpc_pass = strdup(++p);
-				if (*p) *p++ = 'x';
+				if (*p) *++p = 'x';
 				v = strlen(hp + 1) + 1;
 				memmove(p + 1, hp + 1, v);
 				memset(p + v, 0, hp - p);
@@ -1674,7 +1674,7 @@ static void parse_arg(int key, char *arg, char *pname)
 				free(rpc_user);
 				rpc_user = strdup(ap);
 			}
-			*hp++ = '@';
+			*++hp = '@';
 		} else
 			hp = ap;
 		if (ap != arg) {
@@ -1792,7 +1792,7 @@ static void parse_config(json_t *config, char *pname, char *ref)
 	char *s;
 	json_t *val;
 
-	for (i = 0; i < ARRAY_SIZE(options); i++) {
+	for (i = 0; i < ARRAY_SIZE(options); ++i) {
 		if (!options[i].name)
 			break;
 
@@ -2002,7 +2002,7 @@ int main(int argc, char *argv[])
 	}
 
 	/* start mining threads */
-	for (i = 0; i < opt_n_threads; i++) {
+	for (i = 0; i < opt_n_threads; ++i) {
 		thr = &thr_info[i];
 
 		thr->id = i;

@@ -133,7 +133,7 @@ static char *hack_json_numbers(const char *in)
 		return NULL;
 	off = intoff = 0;
 	in_str = in_int = false;
-	for (i = 0; in[i]; i++) {
+	for (i = 0; in[i]; ++i) {
 		char c = in[i];
 		if (c == '"') {
 			in_str = !in_str;
@@ -483,7 +483,7 @@ err_out:
 void memrev(unsigned char *p, size_t len)
 {
 	unsigned char c, *q;
-	for (q = p + len - 1; p < q; p++, q--) {
+	for (q = p + len - 1; p < q; ++p, q--) {
 		c = *p;
 		*p = *q;
 		*q = c;
@@ -493,7 +493,7 @@ void memrev(unsigned char *p, size_t len)
 void bin2hex(char *s, const unsigned char *p, size_t len)
 {
 	int i;
-	for (i = 0; i < len; i++)
+	for (i = 0; i < len; ++i)
 		sprintf(s + (i * 2), "%02x", (unsigned int) p[i]);
 }
 
@@ -540,7 +540,7 @@ bool hex2bin(unsigned char *p, const char *hexstr, size_t len)
 			return false;
 		}
 		p[(i / 2)] |= (nibble << ((1 - (i % 2)) * 4));
-		i++;
+		++i;
 	}
 
 	return true;
@@ -561,14 +561,14 @@ int varint_encode(unsigned char *p, uint64_t n)
 	}
 	if (n <= 0xffffffff) {
 		p[0] = 0xfe;
-		for (i = 1; i < 5; i++) {
+		for (i = 1; i < 5; ++i) {
 			p[i] = n & 0xff;
 			n >>= 8;
 		}
 		return 5;
 	}
 	p[0] = 0xff;
-	for (i = 1; i < 9; i++) {
+	for (i = 1; i < 9; ++i) {
 		p[i] = n & 0xff;
 		n >>= 8;
 	}
@@ -856,7 +856,7 @@ bool fulltest(const uint32_t *hash, const uint32_t *target)
 		uint32_t hash_be[8], target_be[8];
 		char hash_str[65], target_str[65];
 		
-		for (i = 0; i < 8; i++) {
+		for (i = 0; i < 8; ++i) {
 			be32enc(hash_be + i, hash[7 - i]);
 			be32enc(target_be + i, target[7 - i]);
 		}
@@ -1151,7 +1151,7 @@ static const char *get_stratum_session_id(json_t *val)
 	if (!arr_val || !json_is_array(arr_val))
 		return NULL;
 	n = json_array_size(arr_val);
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		const char *notify;
 		json_t *arr = json_array_get(arr_val, i);
 
@@ -1348,7 +1348,7 @@ static bool stratum_notify(struct stratum_ctx *sctx, json_t *params)
 		goto out;
 	}
 	merkle = malloc(merkle_count * sizeof(char *));
-	for (i = 0; i < merkle_count; i++) {
+	for (i = 0; i < merkle_count; ++i) {
 		const char *s = json_string_value(json_array_get(merkle_arr, i));
 		if (!s || strlen(s) != 64) {
 			while (i--)
@@ -1379,7 +1379,7 @@ static bool stratum_notify(struct stratum_ctx *sctx, json_t *params)
 	sctx->job.job_id = strdup(job_id);
 	hex2bin(sctx->job.prevhash, prevhash, 32);
 
-	for (i = 0; i < sctx->job.merkle_count; i++)
+	for (i = 0; i < sctx->job.merkle_count; ++i)
 		free(sctx->job.merkle[i]);
 	free(sctx->job.merkle);
 	sctx->job.merkle = merkle;

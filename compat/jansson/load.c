@@ -146,7 +146,7 @@ static char stream_get(stream_t *stream, json_error_t *error)
 
             assert(count >= 2);
 
-            for(i = 1; i < count; i++)
+            for(i = 1; i < count; ++i)
                 stream->buffer[i] = stream->get(stream->data);
 
             if(!utf8_check_full(stream->buffer, count, NULL))
@@ -229,7 +229,7 @@ static int32_t decode_unicode_escape(const char *str)
 
     assert(str[0] == 'u');
 
-    for(i = 1; i <= 4; i++) {
+    for(i = 1; i <= 4; ++i) {
         char c = str[i];
         value <<= 4;
         if(isdigit(c))
@@ -279,7 +279,7 @@ static void lex_scan_string(lex_t *lex, json_error_t *error)
             c = lex_get_save(lex, error);
             if(c == 'u') {
                 c = lex_get_save(lex, error);
-                for(i = 0; i < 4; i++) {
+                for(i = 0; i < 4; ++i) {
                     if(!isxdigit(c)) {
                         lex_unget_unsave(lex, c);
                         error_set(error, lex, "invalid escape");
@@ -322,7 +322,7 @@ static void lex_scan_string(lex_t *lex, json_error_t *error)
 
     while(*p != '"') {
         if(*p == '\\') {
-            p++;
+            ++p;
             if(*p == 'u') {
                 char buffer[4];
                 int length;
@@ -387,11 +387,11 @@ static void lex_scan_string(lex_t *lex, json_error_t *error)
                     default: assert(0);
                 }
                 t++;
-                p++;
+                ++p;
             }
         }
         else
-            *(t++) = *(p++);
+            *(t++) = *(++p);
     }
     *t = '\0';
     lex->token = TOKEN_STRING;
