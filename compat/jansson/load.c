@@ -157,11 +157,11 @@ static char stream_get(stream_t *stream, json_error_t *error)
         }
         else {
             stream->buffer[1] = '\0';
-            stream->stream_++pos;
+            stream->stream_pos++;
         }
     }
 
-    return stream->buffer[stream->buffer_++pos];
+    return stream->buffer[stream->buffer_pos++];
 
 out:
     error_set(error, NULL, "unable to decode byte 0x%x at position %d",
@@ -217,7 +217,7 @@ static void lex_save_cached(lex_t *lex)
     while(lex->stream.buffer[lex->stream.buffer_pos] != '\0')
     {
         lex_save(lex, lex->stream.buffer[lex->stream.buffer_pos]);
-        lex->stream.buffer_++pos;
+        lex->stream.buffer_pos++;
     }
 }
 
@@ -793,7 +793,7 @@ static int string_get(void *data)
         return EOF;
     else
     {
-        stream->++pos;
+        stream->pos++;
         return c;
     }
 }
