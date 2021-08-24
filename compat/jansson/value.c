@@ -489,7 +489,7 @@ int json_array_append_new(json_t *json, json_t *value)
     }
 
     array->table[array->entries] = value;
-    array->entries++;
+    array->++entires;
 
     return 0;
 }
@@ -529,7 +529,7 @@ int json_array_insert_new(json_t *json, unsigned int index, json_t *value)
         array_move(array, index + 1, index, array->entries - index);
 
     array->table[index] = value;
-    array->entries++;
+    array->++entires;
 
     return 0;
 }

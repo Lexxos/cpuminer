@@ -486,7 +486,7 @@ static inline int scanhash_sha256d_4way(int thr_id, uint32_t *pdata,
 	memcpy(data, pdata + 16, 64);
 	sha256d_preextend(data);
 	for (i = 31; i >= 0; i--)
-		for (j = 0; j < 4; j++)
+		for (j = 0; j < 4; ++j)
 			data[i * 4 + j] = data[i];
 	
 	sha256_init(midstate);
@@ -494,7 +494,7 @@ static inline int scanhash_sha256d_4way(int thr_id, uint32_t *pdata,
 	memcpy(prehash, midstate, 32);
 	sha256d_prehash(prehash, pdata + 16);
 	for (i = 7; i >= 0; i--) {
-		for (j = 0; j < 4; j++) {
+		for (j = 0; j < 4; ++j) {
 			midstate[i * 4 + j] = midstate[i];
 			prehash[i * 4 + j] = prehash[i];
 		}
@@ -545,7 +545,7 @@ static inline int scanhash_sha256d_8way(int thr_id, uint32_t *pdata,
 	memcpy(data, pdata + 16, 64);
 	sha256d_preextend(data);
 	for (i = 31; i >= 0; i--)
-		for (j = 0; j < 8; j++)
+		for (j = 0; j < 8; ++j)
 			data[i * 8 + j] = data[i];
 	
 	sha256_init(midstate);
@@ -553,7 +553,7 @@ static inline int scanhash_sha256d_8way(int thr_id, uint32_t *pdata,
 	memcpy(prehash, midstate, 32);
 	sha256d_prehash(prehash, pdata + 16);
 	for (i = 7; i >= 0; i--) {
-		for (j = 0; j < 8; j++) {
+		for (j = 0; j < 8; ++j) {
 			midstate[i * 8 + j] = midstate[i];
 			prehash[i * 8 + j] = prehash[i];
 		}

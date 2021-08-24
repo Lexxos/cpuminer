@@ -138,7 +138,7 @@ static char *hack_json_numbers(const char *in)
 		if (c == '"') {
 			in_str = !in_str;
 		} else if (c == '\\') {
-			out[off++] = c;
+			out[++off] = c;
 			if (!in[++i])
 				break;
 		} else if (!in_str && !in_int && isdigit(c)) {
@@ -159,13 +159,13 @@ static char *hack_json_numbers(const char *in)
 					l = strtol(out + intoff, &end, 10);
 					if (!*end && (errno == ERANGE || l > INT_MAX)) {
 #endif
-						out[off++] = '.';
-						out[off++] = '0';
+						out[++off] = '.';
+						out[++off] = '0';
 					}
 				}
 			}
 		}
-		out[off++] = in[i];
+		out[++off] = in[i];
 	}
 	return out;
 }
@@ -255,7 +255,7 @@ static size_t resp_hdr_cb(void *ptr, size_t size, size_t nmemb, void *user_data)
 	remlen = ptrlen - slen - 1;
 	while ((remlen > 0) && (isspace(*rem))) {
 		remlen--;
-		rem++;
+		++rem;
 	}
 
 	memcpy(val, rem, remlen);	/* store value, trim trailing ws */
@@ -607,11 +607,11 @@ static bool b58dec(unsigned char *bin, size_t binsz, const char *b58)
 	j = 0;
 	switch (rem) {
 		case 3:
-			*(bin++) = (outi[0] >> 16) & 0xff;
+			*(++bin) = (outi[0] >> 16) & 0xff;
 		case 2:
-			*(bin++) = (outi[0] >> 8) & 0xff;
+			*(++bin) = (outi[0] >> 8) & 0xff;
 		case 1:
-			*(bin++) = outi[0] & 0xff;
+			*(++bin) = outi[0] & 0xff;
 			++j;
 		default:
 			break;
@@ -901,7 +901,7 @@ static bool send_line(struct stratum_ctx *sctx, char *s)
 	ssize_t len, sent = 0;
 	
 	len = strlen(s);
-	s[len++] = '\n';
+	s[++len] = '\n';
 
 	while (len > 0) {
 		struct timeval timeout = {0, 0};

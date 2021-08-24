@@ -1546,8 +1546,8 @@ static void show_usage_and_exit(int status)
 
 static void strhide(char *s)
 {
-	if (*s) *s++ = 'x';
-	while (*s) *s++ = '\0';
+	if (*s) *++s = 'x';
+	while (*s) *++s = '\0';
 }
 
 static void parse_config(json_t *config, char *pname, char *ref);
